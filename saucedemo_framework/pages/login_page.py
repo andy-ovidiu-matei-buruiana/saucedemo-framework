@@ -18,6 +18,8 @@ class LoginPage(BasePage):
         self._wait_visible(self.PASSWORD)
         self._wait_visible(self.LOGIN_BTN)
 
+        return True
+
     def login(self, uname, pword):
         self._wait_visible(self.USERNAME).send_keys(uname)
         self._wait_visible(self.PASSWORD).send_keys(pword)
