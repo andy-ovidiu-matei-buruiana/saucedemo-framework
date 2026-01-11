@@ -16,8 +16,7 @@ def test_valid_login(browser, uname):
     inventory_page = login.login(uname, PASSWORD)
 
     # * Verify login successful
-    inventory_page.is_loaded()
-    assert browser.current_url == INVENTORY_URL
+    inventory_page.is_loaded(INVENTORY_URL)
 
     inventory_page.logout()
 

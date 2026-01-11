@@ -1,10 +1,13 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from pages.base_page import BasePage
+from pages.cart_page import CartPage
 
 
 class InventoryPage(BasePage):
+    CART_URL = "https://www.saucedemo.com/cart.html"
     CART_LINK = (By.CLASS_NAME, "shopping_cart_link")
+    CHECKOUT_BTN = (By.CSS_SELECTOR, "[data-test='checkout']")
     CART_BADGE = (By.CSS_SELECTOR, "[data-test='shopping-cart-badge']")
     SORT_DROPDOWN = (By.CSS_SELECTOR, "[data-test='product-sort-container']")
     ACTIVE_SORT = (By.CSS_SELECTOR, "[data-test='active-option']")
@@ -13,8 +16,9 @@ class InventoryPage(BasePage):
     INVENTORY_PRICES = (By.CSS_SELECTOR, "[data-test='inventory-item-price']")
     INVENTORY_NAMES = (By.CSS_SELECTOR, "[data-test='inventory-item-name']")
 
-    def is_loaded(self):
+    def is_loaded(self, url):
         self._wait_visible(self.CART_LINK)
+        self._wait_url_contains(url)
 
     def logout(self):
         self._click(self.MENU_BTN)
@@ -51,3 +55,10 @@ class InventoryPage(BasePage):
     def get_item_names(self):
         names = self._find_all(self.INVENTORY_NAMES)
         return [name.text.strip() for name in names]
+
+    def go_to_cart(self):
+        self._click(self.CART_LINK)
+        self._wait_url_contains(self.CART_URL)
+        self._wait_clickable(self.CHECKOUT_BTN)
+
+        return CartPage(self.driver, self.timeout)
