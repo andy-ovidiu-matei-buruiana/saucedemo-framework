@@ -1,9 +1,11 @@
 import pytest
 from selenium import webdriver
+from selenium.webdriver.ie.webdriver import WebDriver
+
+from pages.inventory_page import InventoryPage
 from pages.login_page import LoginPage
 from testdata.users import VALID_USERS, PASSWORD
 
-INVENTORY_URL = "https://www.saucedemo.com/inventory.html"
 
 @pytest.fixture
 def browser():
@@ -16,11 +18,12 @@ def browser():
     }
     options.add_experimental_option("prefs", prefs)
 
-    # Extra: reduce random Chrome UI interruptions
+    # reduce random Chrome UI interruptions
     options.add_argument("--disable-notifications")
     options.add_argument("--disable-save-password-bubble")
     options.add_argument("--no-default-browser-check")
     options.add_argument("--no-first-run")
+    # use guest to remove password leak prompts
     options.add_argument("--guest")
 
     driver = webdriver.Chrome(options=options)
@@ -30,7 +33,7 @@ def browser():
     driver.quit()
 
 @pytest.fixture
-def logged_in_inventory(browser):
+def logged_in_inventory(browser: WebDriver) -> InventoryPage:
     # create Login Page object
     login = LoginPage(browser, 10)
     # open page
@@ -38,6 +41,6 @@ def logged_in_inventory(browser):
     # login with valid user
     inventory_page = login.login(VALID_USERS[0], PASSWORD)
     # verify login successful
-    inventory_page.is_loaded(INVENTORY_URL)
+    inventory_page.is_loaded()
 
     return inventory_page

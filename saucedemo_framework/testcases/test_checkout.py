@@ -1,8 +1,4 @@
-import time
-
 from testdata.items import ITEMS
-
-INVENTORY_URL = "https://www.saucedemo.com/inventory.html"
 
 def test_checkout(logged_in_inventory):
     logged_in_inventory.add_to_cart(ITEMS[0])
@@ -16,4 +12,4 @@ def test_checkout(logged_in_inventory):
 
     complete.back_home()
 
-    logged_in_inventory.is_loaded(INVENTORY_URL)
+    logged_in_inventory.is_loaded()

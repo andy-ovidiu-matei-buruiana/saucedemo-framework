@@ -12,7 +12,7 @@ def test_checkout(logged_in_inventory, fname, lname, zcode, error_text):
 
     error = step_one.fill_wrong_info(fname, lname, zcode)
 
-    assert error.text.strip() == error_text
+    assert error == error_text
 
 
 
