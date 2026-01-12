@@ -2,7 +2,7 @@ from typing import Tuple, TypeVar, Callable, Optional, List, cast
 import sys
 from selenium.common import StaleElementReferenceException, ElementClickInterceptedException, TimeoutException
 from selenium.webdriver import Keys
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -38,6 +38,15 @@ class BasePage:
 
     def _wait_visible(self, locator: Locator) -> WebElement:
         return self.wait.until(EC.visibility_of_element_located(locator))
+
+    def _is_visible(self, locator: Locator, timeout: int = 1) -> bool:
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.visibility_of_element_located(locator)
+            )
+            return True
+        except TimeoutException:
+            return False
 
     def _wait_invisible(self, locator: Locator) -> bool:
         result = self.wait.until(EC.invisibility_of_element_located(locator))
