@@ -1,32 +1,20 @@
 import pytest
-from pages.login_page import LoginPage
+from flows.login_flow import LoginFlow
+from models.login_user import LogInUserInfo
 from testdata.users import VALID_USERS, INVALID_USERS, PASSWORD
 
 ERROR_TEXT = "Epic sadface: Sorry, this user has been locked out."
 
 @pytest.mark.parametrize("uname", VALID_USERS)
 def test_valid_login(browser, uname):
+    user = LogInUserInfo(uname, PASSWORD)
+    inventory = LoginFlow.login_successful(browser, 10, user)
 
-    # create Login Page object
-    login = LoginPage(browser, 10)
-    # open page
-    login.open()
-    # login with each user
-    inventory_page = login.login(uname, PASSWORD)
+    inventory.is_loaded()
+    inventory.header.logout()
 
-    # * Verify login successful
-    inventory_page.is_loaded()
-
-    inventory_page.logout()
 
 @pytest.mark.parametrize("uname", INVALID_USERS)
 def test_invalid_login(browser, uname):
-    # create Login Page object
-    login = LoginPage(browser, 10)
-    # open page
-    login.open()
-    # login with each user
-    login.login(uname, PASSWORD)
-
-    # * Verify login not successful
-    login.login_failed(ERROR_TEXT)
+    user = LogInUserInfo(uname, PASSWORD)
+    LoginFlow.login_unsuccessful(browser, 10, user, ERROR_TEXT)

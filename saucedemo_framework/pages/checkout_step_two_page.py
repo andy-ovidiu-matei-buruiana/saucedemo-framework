@@ -6,6 +6,10 @@ from pages.complete_page import CompletePage
 class CheckoutStepTwoPage(BasePage):
     CHECKOUT_S2_URL = "checkout-step-two"
     FINISH_BTN = (By.CSS_SELECTOR, "[data-test='finish']")
+    URL_PART = "/checkout-step-two.html"
+
+    def is_loaded(self) -> None:
+        self._wait_url_contains(self.URL_PART)
 
     def finish(self) -> CompletePage:
         self._wait_url_contains(self.CHECKOUT_S2_URL)

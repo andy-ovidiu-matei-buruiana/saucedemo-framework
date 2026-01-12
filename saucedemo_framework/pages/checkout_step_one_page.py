@@ -11,26 +11,32 @@ class CheckoutStepOnePage(BasePage):
     ZIP_CODE = (By.ID, "postal-code")
     CONTINUE_BTN = (By.CSS_SELECTOR, "[data-test='continue']")
     ERROR = (By.CSS_SELECTOR, "[data-test='error']")
+    URL_PART = "/checkout-step-one.html"
 
-    def fill_info(self, fname: str, lname: str, zcode: str) -> CheckoutStepTwoPage:
+    def is_loaded(self) -> None:
+        self._wait_url_contains(self.URL_PART)
+
+    def submit_info(
+            self,
+            fname: Optional[str] = None,
+            lname: Optional[str] = None,
+            zcode: Optional[str] = None
+        ) -> Optional[CheckoutStepTwoPage]:
+
         self._wait_url_contains(self.CHECKOUT_S1_URL)
-        self._type(self.FIRST_NAME, fname)
-        self._type(self.LAST_NAME, lname)
-        self._type(self.ZIP_CODE, zcode)
+        if fname is not None:
+            self._type(self.FIRST_NAME, fname)
+        if lname is not None:
+            self._type(self.LAST_NAME, lname)
+        if zcode is not None:
+            self._type(self.ZIP_CODE, zcode)
+
         self._click(self.CONTINUE_BTN)
+
+        if self._is_visible(self.ERROR):
+            return None
 
         return CheckoutStepTwoPage(self.driver, self.timeout)
 
-    def fill_wrong_info(self, fname: Optional[str] = None, lname: Optional[str] = None, zcode: Optional[str] = None) -> str:
-        self._wait_url_contains(self.CHECKOUT_S1_URL)
-
-        if not fname is None:
-            self._type(self.FIRST_NAME, fname)
-        if not lname is None:
-            self._type(self.LAST_NAME, lname)
-        if not zcode is None:
-            self._type(self.ZIP_CODE, zcode)
-        self._click(self.CONTINUE_BTN)
-
+    def error_text(self) -> str:
         return self._text(self.ERROR)
-

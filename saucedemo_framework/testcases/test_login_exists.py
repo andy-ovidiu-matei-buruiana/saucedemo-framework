@@ -7,4 +7,4 @@ def test_login_exists(browser):
     # open page
     login.open()
 
-    assert login.is_loaded()
+    login.is_loaded()
