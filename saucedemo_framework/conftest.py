@@ -1,6 +1,57 @@
+import os
+from datetime import datetime
+
 import pytest
+import pytest_html
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver
+
+
+# -------- pytest html report config ---------
+
+def pytest_html_report_title(report):
+    report.title = "SauceDemo Selenium Test Report"
+
+
+def pytest_html_results_summary(prefix, summary, postfix):
+    prefix.extend([
+        "Project: SauceDemo Automation",
+        "Framework: pytest + Selenium",
+    ])
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    if report.when != "call":
+        return
+
+    driver = item.funcargs.get("browser")
+    if driver is None:
+        return
+
+    if report.failed:
+        reports_dir = os.path.join(os.getcwd(), "saucedemo_framework/reports")
+        screenshots_dir = os.path.join(reports_dir, "screenshots")
+        os.makedirs(screenshots_dir, exist_ok=True)
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_name = "".join(
+            c if c.isalnum() or c in "-_." else "_"
+            for c in item.nodeid
+        )
+        png_path = os.path.join(
+            screenshots_dir, f"{safe_name}_{timestamp}.png"
+        )
+
+        driver.save_screenshot(png_path)
+
+        extras = getattr(report, "extras", [])
+        extras.append(pytest_html.extras.image(png_path))
+        report.extras = extras
+
+# ------- pytest CLI options --------
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
@@ -15,6 +66,8 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         action="store",
         default="chrome",
         choices=["chrome", "firefox", "edge", "remote"])
+
+# -------- test fixtures ----------
 
 from flows.login_flow import LoginFlow
 from models.login_user import LogInUserInfo

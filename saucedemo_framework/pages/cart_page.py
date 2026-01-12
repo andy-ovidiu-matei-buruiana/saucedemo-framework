@@ -1,6 +1,5 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
-from components.header import Header
 from pages.base_page import BasePage
 from pages.checkout_step_one_page import CheckoutStepOnePage
 
@@ -11,6 +10,7 @@ class CartPage(BasePage):
 
     def __init__(self, driver: WebDriver, timeout: int) -> None:
         super().__init__(driver, timeout)
+        from components.header import Header
         self.header = Header(driver, timeout)
 
     def is_loaded(self) -> None:
