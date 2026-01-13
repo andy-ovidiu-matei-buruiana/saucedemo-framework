@@ -221,6 +221,7 @@ Planned extensions:
 - Dockerized Selenium
 - API + UI hybrid tests
 - Visual regression testing
+- Extend test base
 
 ---
 
